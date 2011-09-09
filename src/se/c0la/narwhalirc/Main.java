@@ -16,7 +16,10 @@ public class Main
         MainFrame frame = new MainFrame();
         
         Network network = new Network(frame);
-        network.connect("irc.tapiren.se", 6667);
+        network.setNick("narwhalirc");
+        network.setRealName("narwhal irc 0.9");
+        network.setChannel("#floodffs!");
+        network.connect("irc.esper.net", 6667);
         
         frame.setNetwork(network);
     }

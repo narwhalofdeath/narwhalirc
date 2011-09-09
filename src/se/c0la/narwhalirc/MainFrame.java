@@ -23,15 +23,13 @@ public class MainFrame extends JFrame
         
         input = new JTextField();
         input.addKeyListener(new KeyAdapter(){
-            public void keyPressed(KeyEvent e){
-                if (e.getKeyCode() != KeyEvent.VK_ENTER){
-                    return;
+                public void keyPressed(KeyEvent e){
+                    if (e.getKeyCode() != KeyEvent.VK_ENTER){
+                        return;
+                    }
+                    handleCommand(input.getText());
                 }
-                net.sendMessage(input.getText());
-                log(input.getText());
-                input.setText("");
-            }
-        });
+            });
         input.setMaximumSize(new Dimension(Integer.MAX_VALUE,30));
         panel.add(input);
         
@@ -39,10 +37,31 @@ public class MainFrame extends JFrame
         
         setVisible(true);
         setTitle("Narwhal IRC 0.9");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(600,400);
         
+        addWindowListener(new WindowAdapter() {
+                public void windowClosing(WindowEvent e) {
+                    net.sendMessage("QUIT :bye, bye");
+                    System.exit(0);
+                }
+            });
+        
         pack();
+    }
+    
+    private void handleCommand(String command)
+    {
+        if (command.startsWith("/")) {
+            String[] split = command.split(" ");
+            if ("/quit".equalsIgnoreCase(split[0])) {
+                net.sendMessage("QUIT :bye, bye");
+                System.exit(0);
+            }
+        } else {
+            net.sendMessage(String.format("PRIVMSG %s :%s", net.getChannel(), command));
+            log(String.format("<%s> %s", net.getNick(), command));
+            input.setText("");
+        }
     }
     
     public void setNetwork(Network net)
